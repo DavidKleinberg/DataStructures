@@ -4,7 +4,15 @@ Programming Projects from DataStructures
 
 Below is the file directory:
 
-1. 
+1. Counters and ADTs
+    - BasicCounter.java
+    - Counter.java
+    - FlexibleCounter.java
+    - PolyCount.java
+    - ResetableCounter.java
+    - SquareCounter.java
+    - Unique.java
+    * UglyArray ADT in README
 2. Arrays & Linked Lists
     - Array.java
     - IndexException.java
