@@ -1,0 +1,290 @@
+David Kleinberg
+dkleinb1@jhu.edu
+September 25, 2016
+DataStructures Assignment 3
+
+PROBLEM 1
+
+Statable Array
+- This class overrides the get, put, and length methods of SimpleArray to increment the "numReads" and "numWrites" counters
+- The operations of these methods stay the same
+
+Statable Array Test
+- This class contains the JUnit test cases for StatableArrays
+- Since StatableArray extends SimpleArray, we can assume that all the axioms from SimpleArray work.
+  Therefore, I focused on testing the differentiating elements of statable array to any other
+  array, that is, numberOfWrites(), numberOfReads(), and resetStatistics() methods.
+  This means that Put, Get, and Length methods are only called in the StatableArrayTest
+  to check that the statistics are changing. It assumes that the three methods work properly.
+- Since the Statable interface doesn’t use exceptions, I didn't test any preconditions either.
+
+1. ReadCounter checks that calls to both Get and Length change the number of reads
+	(length is being called length+1 times in the for loop)
+2. WriteCounter checks that calls to Put change the number of writes
+3. ResetStats checks that the counters have been increased and then that the Reset call returns their values to 0
+4. CountersInitialized checks that the counters are initialized to 0 when an array is constructed
+
+PROBLEM 2
+
+SelectionSort, InsertionSort, and BubbleSort
+
+Though all three sorting algorithms have n^2 complexity, there are pros and cons to each.
+One might be better fit for a certain type of data or for consequent operations on the sorted data.
+
+Insertion Sort builds an already sorted list
+- thus, after n sweeps, it will have a list of n-many sorted objects
+- this doesn't mean however that the lowest value will be the first UNTIL the last sweep
+
+Bubble Sort essentially brings the largest object to the end of the list with each sweep
+- it also tends to move the lower-valued objects to the front
+- it has the ability of "jumping out" of the sorting operations once it finds that everything is in correct order.
+
+Selection Sort finds the smallest object and brings it to the front
+- in doing so, it switches it with the object originally at the front
+
+Following is a sample of some of the tests I ran:
+
+./RunPolySortTest.sh
+
+    Size         Reads        Writes       Seconds     
+
+DESCENDING
+   
+S   1,000        1,501,499    1,000        0.021269
+S 	5,000        37,507,499   5,000        0.199002
+S 	10,000       150,014,999  10,000       1.289398 
+
+B 	1,000        3,995,002    999,000      0.030345
+B 	5,000        99,975,002   24,995,000   0.556507
+B 	10,000       399,950,002  99,990,000   4.033883
+
+I 	1,000        1,999,001    999,000      0.025642    
+I 	5,000        49,995,001   24,995,000   0.194538        
+I 	10,000       199,990,001  99,990,000   0.838522
+
+Selection Sort's number of writes increase linearly and are fewest
+compared to the other sorting algorithms. The number of writes are actually
+equal to the size of the list.
+Bubble and Insertion Sort have to make n^2-n writes
+Insertion, overall, is the fastest with this type of data
+
+ASCENDING
+
+S 	1,000        1,500,499    0            0.022616 
+S 	5,000        37,502,499   0            0.158143
+S 	10,000       150,004,999  0            0.805001 
+
+B 	1,000        2,999        0            0.000205 
+B 	5,000        14,999       0            0.000802
+B 	10,000       29,999       0            0.001641
+
+I 	1,000        1,000,001    0            0.021703    
+I 	5,000        25,000,001   0            0.222858    
+I 	10,000       100,000,001  0            1.321271
+
+As expected, there are no writes because the list is already in order.
+
+Selection Sort's reads increase by a factor of (ratio of sizes)^2.
+This corroborates an n^2 asymptotic complexity.
+Insertion Sort's reads increase quadratically (n^2 + 1).
+Both are close in time, however Insertion Sort's trend suggests it might take longer
+as the data sets grow even further.
+
+Bubble sort has the fastest time with ascending-ordered data sets.
+Its trend in time was 2 * .0001, 2^3 * .0001, 2^4 * .0001 for sizes 1000, 5000, and 10000, respectively.
+It would be more accurate to say that doubling the length of the list (of ascending data)
+doubles the time. This makes sense because bubble sort is really just doing one sweep of length n.
+The number of reads Bubble Sort makes is 3n - 1.
+
+RANDOM
+
+S 	1,000        1,502,481    1,982        0.016942
+S 	5,000        37,512,467   9,968        0.173393
+S 	10,000       150,024,977  19,978       0.845374  
+
+B 	1,000        3,249,410    502,326      0.036126   
+B 	5,000        87,048,698   12,563,664   0.676552 
+B 	10,000       348,389,283  50,229,222   5.387181    
+
+I 	1,000        1,502,327    502,326      0.023823    
+I 	5,000        37,563,665   12,563,664   0.264719    
+I 	10,000       150,229,223  50,229,222   1.612965
+
+I would make the claim that Selection Sort is not impacted as greatly by the initial condition of
+the list, as the other algorithms are. The data above, showing the test with randomly arranged data,
+has more reads and writes than had occurred in ascending order but still had very comparable times for each trial.
+In desending order (the worst case for Selection Sort), the amount of time didn't increase
+much from the other six trials with different data sets.
+
+Some resulting times from sorts on lists of doubling length:
+
+Length		SelectionSort 		BubbleSort 		InsertionSort
+1000		0.023538			0.030444     	0.028928 
+2000		0.031029       		0.086057    	0.046108 	<-- Descending Data
+4000		0.133633			0.300488    	0.131639        
+8000		0.582505			1.735378		0.549819
+
+1000		0.019646			0.036670		0.021552
+2000		0.044231			0.100828		0.049256 	<-- Random Data
+4000		0.132593			0.311030		0.134407
+8000		0.638406			1.750313		0.482279
+
+Given the asymptotic complexity being n^2, one would expect each run time (above) to be 4x that
+of the previous test. Selection sort is really the only algorithm that follows this trend
+in data of descending order. Though the results are a little more noisy with the random data,
+this expected trend becomes more apparent in bubble sort as well, while insertion sort's time 
+seems to still increase by a smaller factor. 
+
+Conclusions:
+
+There are other factors to consider, as in how the code was written. 
+For instance, I could significantly decrease the number of reads in one algorithm
+simply by storing a get(i) value on an index that is repeatedly called.
+
+Additionally, Writes and Reads do not show us the full picture. Assignments and Comparisons are
+the factors used in determining an algorithm's complexity, whereas in this case, we can
+only measure the number of Writes and Reads.
+Writes are the number of "put()" methods called and Reads are the number of "get()" or "length()"
+methods called. Though "put()" is an assignment, so are + - = etc. These have not been taken into
+account in the statistics, however.
+Reads often indicate a comparison, though it wouldn't be accurate to equate the number of reads to
+the number of comparisons because one could simply be placing the value get(i) at a new index.
+
+In terms of practical uses for the different algorithms,
+- Bubble Sort would be most efficiently applied to lists whose data tends to ascend.
+	It could therefore be helpful in checking that a list is in order, or sorting
+	data that has a clean, increasing trend but that is noisy.
+	This is primarily due to its ability to jump out when possible.
+- Insertion Sort was fastest in reordering descending data to ascending order.
+- Selection Sort is best for random data. 
+
+In selection sort, unlike bubble sort or in some ways insertion sort,
+if the lowest value were at the end of the list, it would not need to make n switches to get to 
+the correct position. It would rather find this lowest value (which is at the end) and make one switch
+with the value in position 1. This can be generalized to most data: Selection Sort will often be more
+efficient, with the exception of certain cases.
+
+It can therefore be concluded that SWITCHES are most costly because
+they require multiple assignments and comparisons.
+
+Deliverables:
+
+1. BubbleSort.java
+	- Implements SortingAlgorithm Interface
+	- Extends Comparable
+2. InsertionSort.java
+	- Implements SortingAlgorithm Interface
+	- Extends Comparable
+
+Additionally I have included two more files in the compressed tarball file:
+
+	1. RunPolySortTest.sh
+		- takes the random, descending, and ascending .data files as input for the IntToString class
+		- takes each output from the IntToString class and puts it in a new file
+		- runs the PolySort class four times for each input type doubling its size
+		(Two additional runs in each of size 5,000 and 10,000 to show the larger trend for sample above)
+
+	2. IntToString.java
+		- turns a list of integers into lexicographically sequential Strings
+		- breaks up each integer into its constituent digits
+		- converts each (integer type) digit into the corresponding letter of the alphabet (a = 0, b = 1, etc.)
+		- adds 0-4 placeholders (a String of "a") in front of the lexicographic number/value
+		* This is necessary because the compareTo method compares the first character of one string with the
+		first character of the other string, the second with the second, and so on.
+		Therefore if "j" (int value 9) were compared to "ba"
+		(desired int value of 10), it would determine that "j" > "ba" because j IS greater than b.
+		Adding buffers would change this comparison to "aaaaj" < "aaaba" which is true.
+		* The data files we are using contain a maximum value of 10,000.
+		Therefore 4 is the max number of placeholders needed
+
+PROBLEM 3
+
+Selection Sort Complexity
+
+1  | public static void selectionSort(int[] a) {
+2  |     for (int i = 0; i < a.length - 1; i++) {
+3  |         int min = i;
+4  |         for (int j = i + 1; j < a.length; j++) {
+5  |             if (a[j] < a[min]) {
+6  |                 min = j;
+7  |             }
+8  |         }
+9  |         int t = a[i]; a[i] = a[min]; a[min] = t;
+10 |     }
+11 | }
+
+Determine exactly how many comparisons C(n) and assignments A(n)
+are performed by this implementation of selection sort in the worst case:
+
+For calculating the complexity of Selection Sort, we must consider the worst case scenario for the program to run.
+This would be a case where every comparison and every assignment would be performed.
+The sort method essentially finds the smallest value/comparable object and moves it to the front of the list (by switching
+places with the value at index of the desired location).
+
+I have deemed the worst case for Selection Sort to be when the data is in descending order.
+After careful tracing of the code (with sample data sets), the biggest factor for this sorting
+algorithm's complexity is the assignment on line 6. All other assignments and comparisons will happen 
+regardless of the data's initial order, but "min = j" only occurs if the comparison in
+line 5's if-statement is true. The comparison will yield true the fewest number of times
+(in fact 0 times) when the data is in ascending order,
+and the greatest number of times when the data is in descending order.
+
+I won't go into too much detail as to how descending order is the absolute worst case
+(other examples would be random order, or having half the data descend then reach the
+highest value in the middle and then ascend, or any other combination one could think of),
+but essentially it is not about the distance one number in the list has to travel to get to the correct spot,
+but rather how many switches (assignments) the sorting method has to make to get it there.
+This means that the sorting method will always pick up a new value if it is smaller than the one before
+and in descending order this is ALWAYS the case. 
+The current value being held will ALWAYS be compared to the next one in the list
+(by the if-statement on line 5), however in any other order combination, 
+it will NOT ALWAYS be dropped every time for the next value.
+
+By this logic, I found that the max number of assignments from line 6 follows this pattern:
+
+(n-1) + (n-3) + (n-5)...
+
+The algebraic representation of this is:
+
+(.5(n+1))^2 when n is odd
+.5n(.5n+1) when n is even 
+(By "n" I mean the number of times the assignment min = j will happen on line 6)
+
+Since this conclusion cannot be generalized, however, I will consider/approximate the worst case to be that of min=j occurring every time the if statement before it occurs. To determine this number of operations I will examine the inner for loop on line 4:
+
+- the operations INSIDE this for loop are "j=i+1", "j<a.length", and "j++"
+- in the first one mentioned, j will start at 1 and its final value will be the array's length, where the next statement will confirm that a.length is not less than a.length
+	This cycle repeats length-1 times because it exists inside another for loop. i is increasing each time though, so the number of times the second for loop runs decrements by 1 each time. The one thing to notice is that when i = n-1, nothing past the comparison of "i < a.length - 1" on line 2 will be executed so the second for loop won't have the final instance of j = n.
+		--> there will be n(n+1)/2 - 1 assignments of j = i + 1
+- the second one mentioned follows the same reasoning as the first
+		--> n(n+1)/2 - 1 comparisons of j < a.length
+- the third follows the similar arguments. Except one must consider that j is only incremented after one of cycle of the for loop is executed. This simplifies to x(x+1)/2, where x is n-1 (and n is the length of the data set)
+		--> n(n-1)/2 assignments of j++
+
+- the operations WITHIN the nested for loop will execute n(n-1)/2 times because j will go from 1 --> length, then 2 --> length, and so on. This pattern simplifies neatly to x(x+1)/2, given its triangular qualities. In this case, I am treating "x" as n-1 where n is the length of the data set.
+	Now we can say:
+		--> there will be n(n-1)/2 assignments on line 6
+		--> there will be n(n-1)/2 comparisons on line 5
+
+Examining the outer for loop on line 2:
+
+- the operations INSIDE this for loop are "i=0", "i<a.length-1", and "i++"
+- in the first one mentioned, i does not change in value after being set to 0
+		--> 1 assignment of i = 0	
+- in the second one mentioned, i will start at 0 and its final value will be n-1, where the next statement will confirm that a.length-1 is not less than a.length-1
+		--> there will be n comparisons
+- in the third, i is only incremented after one of cycle of the for loop is executed. It is incrememented from 0 to n-1
+		--> n-1 assignments of i++  
+
+- the operations WITHIN the nested for loop will execute n-1 times, as i goes from 0 to n-1
+- we already covered the more complicated inner for loop so this is what's left:
+		--> there will be n-1 assignments on line 3
+		--> there will be 3(n-1) assigments on line 9
+
+A(n) = [n(n+1)/2 - 1] + [n(n-1)/2] + [n(n-1)/2] + [1] + [n-1] + [n-1] + [3(n-1)] = 1.5n^2 + 4.5n - 5
+
+C(n) = [n(n+1)/2 - 1] + [n(n-1)/2] + [n] = n^2 + n - 1
+
+A(n) + C(n) = Total operations = 2.5n^2 + 5.5n - 6
+
+* I understand that indexing operations (like a[j] and a[min]) do have a cost, but have not included them because they do not count as a comparison/assignment.
