@@ -1,0 +1,313 @@
+David Kleinberg
+dkleinb1@jhu.edu
+November 12, 2016
+DataStructures Assignment 8
+
+PROBLEM 1 - Warming Up
+
+	1. BinarySearchBench.java
+		Run benchmark tests for insertion, remove, and lookup
+		using the BinarySearchTreeMap
+
+	2. BinarySearchTree Benchmark Tests
+		Results are below
+
+	3. WordBenchmarks.sh
+		Script that runs xtime on Word.java using:
+		a data set of 1k random numbers, 1k random numbers (sorted),
+		10k random number, 10k random numbers (sorted),
+		and 100k random numbers, and 100k random numbers (sorted)
+
+		runs each test three times and finds the average
+
+		prints xtime data to System.out
+
+	4. AverageTimes.java
+		Takes in the xtime data for each data set and averages them
+
+
+$ java -jar jaybee.jar BinarySearchTreeBench
+insertLinearBST	     142297 ns/op
+insertRandomBST	     15621 ns/op
+lookupLinearBST	     110084 ns/op
+lookupRandomBST	     144649 ns/op
+removeLinearBST	     85360 ns/op
+removeRandomBST	     18215 ns/op
+
+Using Simple Map
+
+	$ ./WordBenchmarks.sh
+
+	Average time for 1k:
+	0.248 seconds
+
+	Average time for 10k:
+	2.755 seconds
+
+	Average time for 100k:
+	19.986 seconds
+
+Using BinarySearchTreeMap
+
+	./WordBenchmarks.sh
+
+	Average time for 1k:
+	0.215 seconds
+
+	Average time for 10k:
+	0.346 seconds
+
+	Average time for 100k:
+	0.864 seconds
+
+Simple map is useful here to show the effectiveness of something as simple as
+the basic BinarySearchTree. The comparison is clear with the benchmarks using the
+Word.java program. 
+
+The time it takes for the SimpleMap grows linearly, whereas the time for Word
+to run using a BST grows closer to logarithmically (log base 2 of 10 is ~3.3)
+so this the complexity for BST is actually somewhere less than O(logn).
+This claim can't really be supported with the Word benchmarking though because
+it doesn't take into account the overhead of the data structure. At this point all
+we can conclude is that the BST is much faster than just a list data set.
+
+In terms of the JayBee benchmarks, the results make sense. Linear Insert
+should take the longest because this is the worst case scenario for a BST.
+It is essentially creating a linked list (with even more overhead) and has
+to walk the monkey bars all the way to check if the key is in the tree already
+and only then can it insert the value.
+
+PROBLEM 2 - Spinning AVL Trees
+
+	1. AVLTreeBench.java
+		Run benchmark tests for insertion, remove, and lookup
+		using the BinarySearchTreeMap
+
+	2. AVLTree Benchmark Tests
+		Results are below
+
+	3. WordBenchmarks.sh
+		Script that runs xtime on Word.java using:
+		a data set of 1k random numbers, 1k random numbers (sorted),
+		10k random number, 10k random numbers (sorted),
+		and 100k random numbers, and 100k random numbers (sorted)
+
+		runs each test three times and finds the average
+
+		prints xtime data to System.out
+
+	4. AverageTimes.java
+		Takes in the xtime data for each data set and averages them
+
+	5. AVLTreeMap.java
+		implementation of a binary search tree with the AVL algorithm
+
+	6. AVLTreeTest.java
+		jUnit test
+
+	7. MapTestBase.java
+		jUnit test cases that work for all map implementations
+
+	8. TreeTester.java
+		Not necessary that you look at it, but I refer to it below
+		as something I used to try many test cases.
+
+AVL TREE
+
+	Average time for random 1k:
+	0.213 seconds
+
+	Average time for sorted 1k:
+	0.212 seconds
+
+	Average time for random 10k:
+	0.393 seconds
+
+	Average time for sorted 10k:
+	0.349 seconds
+
+	Average time for random 100k:
+	0.919 seconds
+
+	Average time for sorted 100k:
+	0.757 seconds
+
+	Average time for random 1M:
+	7.175 seconds
+
+	Average time for sorted 1M:
+	5.465 seconds
+
+$ java -jar jaybee.jar AVLTreeMapBench
+insertLinearAVL      171470 ns/op	    
+insertRandomAVL      15093 ns/op	   
+lookupLinearAVL	     100222 ns/op	     
+lookupRandomAVL      134108 ns/op	    
+removeLinearAVL	     18094 ns/op	  
+removeRandomAVL	     16550 ns/op	     
+
+
+Though it cannot be tested in the jUnit test cases in AVLTreeMapTest.java
+(because the implementation is supposed to follow the OrderedMap interface
+which does not print heights), I tested it heavily, using the VisuAlgo
+website (for hours on end) to ensure that my inserts and removes matched
+accordingly. The maximum number of nodes I tested with was 10, given that it
+would be hard to confirm by eye that any tree fuller than this had its nodes
+in proper order, however I tested many combinations of inserts and removes to
+ensure that the properties would carry to larger data sets.
+
+I used TreeTester.java - a very crudely written java program that let me
+work with the AVL tree much like the VisuAlgo website.
+
+It is for this reason that I can boil down the slower performance of the AVL
+Tree to the large overhead it has, when compared to the BST. 
+Log base 2 of 10 is roughly 3.3 therefore we can expect the times to increase by threefold
+between data sets.
+
+The reason that the JayBee Benchmark tests are slower for insert linear than insert
+random is that the avl tree is guaranteed to rebalance a lot if data is inserted
+linearly, but there is a chance that it won't have to rebalance when a random value
+is inserted. Also, on average, the random value should start at the mean/median therefore
+it is more likely to start balanced and require fewer balancing operations.
+
+All other operations don't differ much from one another because they'd require the same amount
+of balancing (roughly).
+
+
+PROBLEM 3 - Creepy Treaps
+
+	1. TreapBench.java
+		Run benchmark tests for insertion, remove, and lookup
+		using the BinarySearchTreeMap
+
+	2. Treap Benchmark Tests
+		Results are below
+
+	3. WordBenchmarks.sh
+		prints xtime data to System.out
+		averages 3 of every set
+		* this time I added a set of size 1 million
+
+	4. AverageTimes.java
+		Takes in the xtime data for each data set and averages them
+
+	5. TreapMap.java
+		implementation of a Treap
+
+	6. TreapMapTest.java
+		jUnit test
+
+	7. MapTestBase.java
+		jUnit test cases that work for all map implementations
+
+AVL TREE
+
+	Average time for random 1k:
+	0.204 seconds
+
+	Average time for sorted 1k:
+	0.226 seconds
+
+	Average time for random 10k:
+	0.338 seconds
+
+	Average time for sorted 10k:
+	3.620 seconds
+
+	Average time for random 100k:
+	0.850 seconds
+
+	Average time for sorted 100k:
+	10.711 seconds
+
+	Average time for random 1M:
+	5.656 seconds
+
+	Average time for sorted 1M:
+	12.053 seconds
+
+BINARY SEARCH TREE
+
+	Average time for random 1k:
+	0.200 seconds
+
+	Average time for sorted 1k:
+	0.234 seconds
+
+	Average time for random 10k:
+	0.323 seconds
+
+	Average time for sorted 10k:
+	3.429 seconds
+
+	Average time for random 100k:
+	0.831 seconds
+
+	Average time for sorted 100k:
+	10.727 seconds
+
+	Average time for random 1M:
+	6.020 seconds
+
+	Average time for sorted 1M:
+	11.879 seconds
+
+TREAP
+
+	Average time for random 1k:
+	0.207 seconds
+
+	Average time for sorted 1k:
+	0.203 seconds
+
+	Average time for random 10k:
+	0.337 seconds
+
+	Average time for sorted 10k:
+	0.326 seconds
+
+	Average time for random 100k:
+	0.906 seconds
+
+	Average time for sorted 100k:
+	0.912 seconds
+
+	Average time for random 1M:
+	7.084 seconds
+
+	Average time for sorted 1M:
+	4.818 seconds
+
+$ java -jar jaybee.jar TreapMapBench
+insertLinearTreap      184157 ns/op	   
+insertRandomTreap	   15663 ns/op	    
+lookupLinearTreap	   127074 ns/op	       
+lookupRandomTreap	   175421 ns/op	       
+removeLinearTreap	   157005 ns/op	     
+removeRandomTreap	   17243 ns/op
+   
+
+Interestingly enough, the BST outperforms the AVL Tree.
+This is most likely due to the large overhead that AVL Tree has.
+As we saw in class, statistically speaking,
+the average height of the basic BST still falls in a range such that it will
+perform acceptably fast. Given this, along with the fact that there is minimal
+overhead in storage and far less overhead in the number of operations that have
+to be done for functions like insert and remove (when compared to AVL),
+it would make sense that BST's outperform the others. 
+
+Looking at Professor Schatz's slides on "Random Tree Height" where he tries
+all the permutations of 1 - 14 distinct distinct trees (so far), the max height
+will be 5-8 95.23% of the time. Following this trend, I would have to run my Word
+benchmark trials 1000 factorial times for the 1k data set to have even a likelihood
+of getting the worst case scenario for run time. Therefore it can be summed up that
+theoretically, AVL Trees are faster, but practically they are not - at least
+for relatively small data sets. The other point to add is that the performance of the AVL
+is guaranteed to have worst case log(n)
+whereas BST's could be classified as the "least safe", but are more than likely going
+to fall in O(logn) and when it does, it is faster than AVL.
+
+Treaps outperform the other map implementations. This makes sense because it has the minimal
+overhead that BST has but it minimizes the likelihood of the tree becoming a list. This is 
+especially clear in the average time for sorted 1M. The word program using BST takes more than
+twice as long as the Treap run. 
