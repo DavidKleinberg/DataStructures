@@ -2,6 +2,8 @@
 
 Programming Projects from DataStructures
 
+Below is the file directory:
+
 1. 
 2. Arrays & Linked Lists
     - Array.java
@@ -28,5 +30,13 @@ Programming Projects from DataStructures
     - Statable.java
     - StatableArray.java
     - StatableArrayTest.java
-4
+4. Stacks and Queues
+    - Array.java
+    - ArrayDequeue.java
+    - ArrayStack.java
+    - Calc.java
+    - Dequeue.java
+    - EmptyException.java
+    - IndexException.java
+    - LengthException.java
 5
