@@ -1,0 +1,489 @@
+David Kleinberg
+dkleinb1@jhu.edu
+October 30, 2016
+DataStructures Assignment 7
+
+PROBLEMS 1 through 3 - General Comments
+
+	Deliverables:
+		1. UniqueBenchmarks.sh
+			This is a script that runs commands in the Terminal.
+			It creates three differently sized files:
+				1. 1000 integer elements (1k suffix)
+				2. 10000 integer elements (10k suffix)
+				3. 100000 integer elements (100k suffix)
+
+			These three differently sized files will also differ by their level
+			of repeated elements:
+				1. 0% repetition (random)
+				2. 50% repetition (mixed)
+				3. 90% repetition (biased)
+
+			The script uses the python program makedata.py to create
+			9 files that are a combination of these factors.
+			It will then delete the text files that it creates.
+
+		2. Unique Benchmark Results
+			Below are the results from running the .sh script
+			on my personal computer. 
+
+		Note: this commandline code and the text results below contain
+		the data required to answer Problems 1-3.
+		Anytime I refer to the results for each specific problem, I will
+		copy the relevant data. I decided to do it this way for various reasons:
+
+- Minimizing Error:
+
+	I put these in the same table because that means the Unique benchmark tests were
+	performed at the same time (approximately), so there will be less variation and error.
+	I did not leave the Unix terminal to run other programs while this was running,
+	so one test can be (roughly) accurately compared to another.
+
+- Comparing Basic Sets to Adaptive Sets and Priority Queues:
+
+	The other reason I chose to put the Unique trials in the same table is that it makes more
+	visible the difference between arrays and linked lists. ArraySet and TransposeSet implementations
+	both use arrays. Their times are comparable - in fact never off by more than .16 seconds.
+	Interestingly, the MoveToFrontList is designed to run Set operations more efficiently, however 
+	when its benchmark time differed from ListSet's, MoveToFront was the more time costly of the two
+	and took, overall, the most time, compared to all other algorithms. The one advantage it had
+	was saving space, but this was negligible and not always the case.
+
+- It will also keep my tarball file cleaner, rather than submitting three different .sh scripts
+
+Below are the Unique Benchmark Trial results:
+
+$ ./UniqueBenchmarks.sh
+biased1k:
+0.19 seconds 27296 kilobytes java UniqueArray
+0.17 seconds 27612 kilobytes java UniqueList
+0.18 seconds 27096 kilobytes java UniqueTranspose
+0.17 seconds 25756 kilobytes java UniqueMoveToFront
+0.20 seconds 25936 kilobytes java UniqueHeapQueue
+0.17 seconds 27600 kilobytes java UniqueSortedQueue
+
+biased10k:
+0.31 seconds 31180 kilobytes java UniqueArray
+0.33 seconds 33020 kilobytes java UniqueList
+0.33 seconds 32708 kilobytes java UniqueTranspose
+0.33 seconds 32548 kilobytes java UniqueMoveToFront
+0.31 seconds 33640 kilobytes java UniqueHeapQueue
+0.31 seconds 32816 kilobytes java UniqueSortedQueue
+
+biased100k:
+0.89 seconds 32808 kilobytes java UniqueArray
+2.00 seconds 34336 kilobytes java UniqueList
+0.87 seconds 33960 kilobytes java UniqueTranspose
+2.72 seconds 33940 kilobytes java UniqueMoveToFront
+0.71 seconds 36472 kilobytes java UniqueHeapQueue
+2.58 seconds 33884 kilobytes java UniqueSortedQueue
+
+mixed1k:
+0.21 seconds 28184 kilobytes java UniqueArray
+0.17 seconds 27408 kilobytes java UniqueList
+0.18 seconds 27360 kilobytes java UniqueTranspose
+0.18 seconds 27764 kilobytes java UniqueMoveToFront
+0.18 seconds 28012 kilobytes java UniqueHeapQueue
+0.18 seconds 25680 kilobytes java UniqueSortedQueue
+
+mixed10k:
+0.40 seconds 33512 kilobytes java UniqueArray
+0.65 seconds 35600 kilobytes java UniqueList
+0.40 seconds 34404 kilobytes java UniqueTranspose
+0.73 seconds 35560 kilobytes java UniqueMoveToFront
+0.31 seconds 32936 kilobytes java UniqueHeapQueue
+0.34 seconds 33132 kilobytes java UniqueSortedQueue
+
+mixed100k:
+2.65 seconds 34536 kilobytes java UniqueArray
+9.65 seconds 36156 kilobytes java UniqueList
+2.81 seconds 35324 kilobytes java UniqueTranspose
+23.86 seconds 35812 kilobytes java UniqueMoveToFront
+0.80 seconds 36508 kilobytes java UniqueHeapQueue
+2.57 seconds 37028 kilobytes java UniqueSortedQueue
+
+random1k:
+0.20 seconds 27960 kilobytes java UniqueArray
+0.20 seconds 27740 kilobytes java UniqueList
+0.20 seconds 27248 kilobytes java UniqueTranspose
+0.19 seconds 27480 kilobytes java UniqueMoveToFront
+0.19 seconds 27868 kilobytes java UniqueHeapQueue
+0.18 seconds 27436 kilobytes java UniqueSortedQueue
+
+random10k:
+0.51 seconds 34908 kilobytes java UniqueArray
+0.87 seconds 34620 kilobytes java UniqueList
+0.57 seconds 35124 kilobytes java UniqueTranspose
+0.89 seconds 31680 kilobytes java UniqueMoveToFront
+0.34 seconds 31680 kilobytes java UniqueHeapQueue
+0.36 seconds 33292 kilobytes java UniqueSortedQueue
+
+random100k:
+6.61 seconds 36700 kilobytes java UniqueArray
+32.20 seconds 38380 kilobytes java UniqueList
+6.57 seconds 36308 kilobytes java UniqueTranspose
+32.07 seconds 38544 kilobytes java UniqueMoveToFront
+0.82 seconds 36428 kilobytes java UniqueHeapQueue
+2.76 seconds 40236 kilobytes java UniqueSortedQueue
+
+
+PROBLEM 1 - Warming Up
+
+	1. BasicSetsBench.java
+		JayBee benchmark driver provided on Piazza.
+		The results
+
+	2. Unique Benchmark Tests
+		These compare ArraySet and ListSet
+
+JayBee Benchmark Trials:
+
+$ java -jar jaybee.jar BasicSetsBench
+insertLinearArraySet	    100000	     19152 ns/op	        35 B/op
+ insertLinearListSet	    100000	     18634 ns/op	        56 B/op
+insertRandomArraySet	     50000	     23567 ns/op	       172 B/op
+ insertRandomListSet	     50000	     26360 ns/op	        71 B/op
+lookupLinearArraySet	    100000	     16503 ns/op	      -475 B/op
+ lookupLinearListSet	    100000	     17755 ns/op	       118 B/op
+lookupRandomArraySet	    100000	     17807 ns/op	      -474 B/op
+ lookupRandomListSet	    100000	     22983 ns/op	       117 B/op
+removeRandomArraySet	     50000	     37510 ns/op	       276 B/op
+ removeRandomListSet	     50000	     36749 ns/op	       275 B/op
+
+
+biased1k:
+0.19 seconds 27296 kilobytes java UniqueArray
+0.17 seconds 27612 kilobytes java UniqueList
+
+biased10k:
+0.31 seconds 31180 kilobytes java UniqueArray
+0.33 seconds 33020 kilobytes java UniqueList
+
+biased100k:
+0.89 seconds 32808 kilobytes java UniqueArray
+2.00 seconds 34336 kilobytes java UniqueList
+
+mixed1k:
+0.21 seconds 28184 kilobytes java UniqueArray
+0.17 seconds 27408 kilobytes java UniqueList
+
+mixed10k:
+0.40 seconds 33512 kilobytes java UniqueArray
+0.65 seconds 35600 kilobytes java UniqueList
+
+mixed100k:
+2.65 seconds 34536 kilobytes java UniqueArray
+9.65 seconds 36156 kilobytes java UniqueList
+
+random1k:
+0.20 seconds 27960 kilobytes java UniqueArray
+0.20 seconds 27740 kilobytes java UniqueList
+
+random10k:
+0.51 seconds 34908 kilobytes java UniqueArray
+0.87 seconds 34620 kilobytes java UniqueList
+
+random100k:
+6.61 seconds 36700 kilobytes java UniqueArray
+32.20 seconds 38380 kilobytes java UniqueList
+
+For the most part, the ArraySet is more efficient that the ListSet. 
+It makes sense that ArraySet would take longer for insertion (with linear data),
+because though it is a constant (amortized) time operation, in practice, some
+insertion operations will in fact take longer due to the array having to grow.
+
+Insertion in a set is different, however. It requires the has() function to be
+called before an element is added to the array or linkedlist, because one of the
+properties of a list is that it only holds one of each value.
+Therefore, insertion requires that both data structures "walk the monkey bars"/check 
+every index before adding. Theoretically, these take the same amount of time, so the
+one distinguishing factor is that the array will sometimes have to grow.
+
+This relation does not hold true in the larger picture. As seen above, the larger the
+data sets get, the larger the ratio of ListSet time to ArraySet time. This goes along
+with what we saw in class that, when dealing with big data, linked lists are not the
+way to go because they don't hold their theoretical properties. This is in part due
+to the large overhead that goes into making a new node each time something is inserted
+into the list and the way the computer stores the nodes in memory also contributes.
+
+PROBLEM 2
+
+Deliverables:
+		
+		1. AdaptiveSetsBench.java
+			Instantiates the adaptive sets Transpose and MoveToFront
+			Creates a couple best case and worst case scenarios for both
+			to show when they can outperform one another or the basic sets
+			The basic sets are still included for comparison and were run
+			together to minimize error.
+
+		2. SetTestBase.java
+			Contains test cases for any implementation of a Set
+
+		3. MoveToFrontListSet.java
+			Implementation of a set using linked lists and the MTF Heuristic
+
+		4. MoveToFrontListSetTest.java
+			Runs the test cases in SetTestBase.java using the MoveToFrontListSet implementation
+			Extends SetTestBase.java's abstract class to set up an MTF set in @Before
+
+		5. TransposeArraySet.java
+			Implementation of a set using arrays and the Transpose Heuristic
+
+		6. TransposeArraySetTest.java
+			Runs the test cases in SetTestBase.java using the TransposeArray implementation
+			Extends SetTestBase.java's abstract class to set up a TransposeArray set in @Before
+
+		7. UniqueTranspose.java
+			Instantiates a TransposeArray Set
+
+		8. UniqueMoveToFront.java
+			Instantiates an MTF set
+
+Note: The JUnit test cases for each individual set implementation are "glass box testing"
+		they use the String outputs of the sets to check their ordering and take the details
+		of the specific implementation into account.
+
+
+$ java -jar jaybee.jar AdaptiveSetsBench
+
+      insertLinearArraySet	    100000	     19218 ns/op	        35 B/op
+       insertLinearListSet	    100000	     19643 ns/op	        57 B/op
+     insertLinearTranspose	    100000	     21115 ns/op	        35 B/op
+           insertLinearMTF	     50000	     35243 ns/op	        22 B/op
+
+      insertRandomArraySet	     50000	     24198 ns/op	        -5 B/op
+       insertRandomListSet	     50000	     26703 ns/op	       163 B/op
+     insertRandomTranspose	     50000	     29511 ns/op	       -16 B/op
+      	   insertRandomMTF	     30000	     50297 ns/op	       134 B/op
+
+    lookupConstantArraySet	     30000	     36271 ns/op	      -260 B/op
+    LookupConstantListSet	    500000	      2065 ns/op	      1301 B/op
+LookupConstantTransposeSet	    100000	     19251 ns/op	      -467 B/op
+ 		 lookupConstantMTF	    500000	      3002 ns/op	       -47 B/op
+
+  lookupLessRandomArraySet	    200000	      5885 ns/op	      -762 B/op
+   lookupLessRandomListSet	     50000	     31874 ns/op	       218 B/op
+ lookupLessRandomTranspose	    200000	      6837 ns/op	      -382 B/op
+       lookupLessRandomMTF	    200000	      9808 ns/op	       -51 B/op
+
+      lookupLinearArraySet	    100000	     16755 ns/op	      -474 B/op
+       lookupLinearListSet	    100000	     18006 ns/op	       126 B/op
+     lookupLinearTranspose	    100000	     20891 ns/op	      -261 B/op
+           lookupLinearMTF	     30000	     44029 ns/op	       281 B/op
+
+      lookupRandomArraySet	    100000	     17821 ns/op	      -475 B/op
+       lookupRandomListSet	    100000	     19373 ns/op	       118 B/op
+     lookupRandomTranspose	    100000	     22758 ns/op	      -303 B/op
+           lookupRandomMTF	     50000	     28025 ns/op	       -32 B/op
+
+    lookupRepeatedArraySet	    300000	      4645 ns/op	         0 B/op
+     lookupRepeatedListSet	    100000	     13937 ns/op	        52 B/op
+   lookupRepeatedTranspose	    300000	      5282 ns/op	      -148 B/op
+         lookupRepeatedMTF	    100000	     21456 ns/op	       117 B/op
+
+      removeRandomArraySet	     30000	     39387 ns/op	       137 B/op
+       removeRandomListSet	     50000	     34848 ns/op	      -336 B/op
+     removeRandomTranspose	     50000	     39088 ns/op	       259 B/op
+           removeRandomMTF	     50000	     37658 ns/op	       -77 B/op
+
+
+biased1k:
+0.18 seconds 27096 kilobytes java UniqueTranspose
+0.17 seconds 25756 kilobytes java UniqueMoveToFront
+
+biased10k:
+0.33 seconds 32708 kilobytes java UniqueTranspose
+0.33 seconds 32548 kilobytes java UniqueMoveToFront
+
+biased100k:
+0.87 seconds 33960 kilobytes java UniqueTranspose
+2.72 seconds 33940 kilobytes java UniqueMoveToFront
+
+mixed1k:
+0.18 seconds 27360 kilobytes java UniqueTranspose
+0.18 seconds 27764 kilobytes java UniqueMoveToFront
+
+mixed10k:
+0.40 seconds 34404 kilobytes java UniqueTranspose
+0.73 seconds 35560 kilobytes java UniqueMoveToFront
+
+mixed100k:
+2.81 seconds 35324 kilobytes java UniqueTranspose
+23.86 seconds 35812 kilobytes java UniqueMoveToFront
+
+random1k:
+0.20 seconds 27248 kilobytes java UniqueTranspose
+0.19 seconds 27480 kilobytes java UniqueMoveToFront
+
+random10k:
+0.57 seconds 35124 kilobytes java UniqueTranspose
+0.89 seconds 31680 kilobytes java UniqueMoveToFront
+
+random100k:
+6.57 seconds 36308 kilobytes java UniqueTranspose
+32.07 seconds 38544 kilobytes java UniqueMoveToFront
+
+There are many factors that contribute to these benchmark times. Given the fact that TransposeSet
+brings a popular value up only one index, there would be almost no improvement from one has() call
+to the next that JayBee makes. Therefore the overhead of the TransposeArraySet operations in this
+case outweigh the benefits when compared to the basic ArraySet.
+
+MoveToFront deals better with less randomness. This means there are specific data sets
+for which MTF will be more efficient than any of the other implementations. By inserting
+random numbers into the first half of set and then inserting a consistent value for the
+second half, MTF will be faster than the other implementations by a huge factor.
+TransposeArraySet will move the value consistently being called forward but not fast
+enough to have a big enough effect in time. ArraySet and ListSet do not change the
+ordering of the data, so they wouldn't be any faster in this situation.
+The problem is that in order for MTF to be faster, it has to be dealing with specific
+data. There are other times where MTF will be the slowest.
+
+The properties of a MoveToFront set make it such that an insert linear
+operation will leave the values in reverse order.
+This is why Look Up Linear is going to take the longest for MTF.
+It is basically creating a reverse-order list and then traversing
+the whole set to see if the last element is present (and it will be),
+then move to the front so that it again has to traverse n elements
+to find the second number it is looking for at the end.
+
+The basic sets were still faster than TransposeArraySet
+in this type of operation.
+The Transpose heuristic is useful in cases of general repetition.
+For instance the LookupLessRandom benchmark trials. It is more
+conservative to use the TransposeArray set implementation
+with data that has some repetition because on average it will make
+the runtime faster, but it won't run the risk of having a really
+bad worst case scenario.
+
+MTF deals better with RemoveRandom than the Transpose heuristic.
+Transpose deals better with LookupRandom than the MTF heuristic.
+Transpose deals better with InsertRandom than the MTF heuristic.
+
+This trend makes sense because the remove() method of the MTF set
+can just fix some pointers and eliminate the element from the list.
+In Transpose, however, worst case scenario is that the program has
+to shift all the elements from the second onwards down one index.
+
+In terms of Transpose being faster for random lookups,
+there are two things to consider:
+
+1. It is VERY unlikely that a random value will repeat
+	itself (at least consecutively).
+
+2. Additionally, it is important to remember the order in
+	which the values are entered into the set.
+	The @Bench for lookUpRandom calls insertLinear(s).
+
+Therefore it is more efficient to keep the values of the set
+in relatively consistent order with how they were inserted.
+This way, some look up operations will require a full set
+traversal, while others might only require looking at the first element.
+Either way on average, the lookups will more likely take O(n/2).
+
+The Transpose heuristic will keep the set in more or less the
+same order that it started in, which was linear, so it will have
+a very rough O(n/2) complexity.
+
+MTF makes a very big assumption - that the last value sought is the
+most popular. In RandomLookup, this is not the case. This could lead
+to a worst case complexity of O(n) for each look up, because the MTF
+heuristic could theoretically keep placing the next value that will
+be looked up at the back of the list.
+
+If the number of elements in the list were even greater,
+this difference would be more stark:
+
+lookupRandomMoveToFrontSet	      2000	    513541 ns/op	     -2133 B/op
+  lookupRandomTransposeSet	      5000	    387578 ns/op	      1888 B/op
+
+Note: these results were obtained from the same AdaptiveSetsBench.java
+		included in my submission. However, I changed the size to 500
+		just for these tests.
+
+To conclude the topic of random data, one set implementation
+may be more efficient at one function while less efficient at
+another. It really all comes out in the wash. The basic ArraySet
+is faster at inserting random data, most likely due to the minimized
+overhead involved.
+
+To conclude AdaptiveSets as a whole, I found that the basic ArraySet
+was in fact the fastest overall (except for some special cases where the
+data was such that the MTF or Transpose Heuristics yielded faster run times).
+Maybe this changes with larger data sets.
+
+PROBLEM 3 - Queuing Priorities
+
+Deliverables:
+		
+		1. UniqueHeapQueue.java
+			Instantiates the BinaryHeapPriorityQueue
+			Saves the last value removed (from the top) and compares
+			to the next to ensure that no values are repeatedly printed
+
+		2. UniqueSortedQueue.java
+			Instantiates the SortedArrayPriorityQueue 
+			saves the last value removed (from the top) and compares
+			to the next to ensure that no values are repeatedly printed
+
+		3. BinaryHeapPriorityQueue.java
+
+		4. SortedArrayPriorityQueue.java
+			This was provided to us, but is necessary here as it is used
+			in the .sh script to compare with BinaryHeapPriorityQueue (mainly)
+			and with the other sets when they are run in the Unique program
+
+		5. PriorityQueuesBench.java
+
+		6. PriorityQueueTest.java
+
+biased1k:
+0.20 seconds 25936 kilobytes java UniqueHeapQueue
+0.17 seconds 27600 kilobytes java UniqueSortedQueue
+
+biased10k:
+0.31 seconds 33640 kilobytes java UniqueHeapQueue
+0.31 seconds 32816 kilobytes java UniqueSortedQueue
+
+biased100k:
+0.71 seconds 36472 kilobytes java UniqueHeapQueue
+2.58 seconds 33884 kilobytes java UniqueSortedQueue
+
+mixed1k:
+0.18 seconds 28012 kilobytes java UniqueHeapQueue
+0.18 seconds 25680 kilobytes java UniqueSortedQueue
+
+mixed10k:
+0.31 seconds 32936 kilobytes java UniqueHeapQueue
+0.34 seconds 33132 kilobytes java UniqueSortedQueue
+
+mixed100k:
+0.80 seconds 36508 kilobytes java UniqueHeapQueue
+2.57 seconds 37028 kilobytes java UniqueSortedQueue
+
+random1k:
+0.19 seconds 27868 kilobytes java UniqueHeapQueue
+0.18 seconds 27436 kilobytes java UniqueSortedQueue
+
+random10k:
+0.34 seconds 31680 kilobytes java UniqueHeapQueue
+0.36 seconds 33292 kilobytes java UniqueSortedQueue
+
+random100k:
+0.82 seconds 36428 kilobytes java UniqueHeapQueue
+2.76 seconds 40236 kilobytes java UniqueSortedQueue
+
+The performance of the Priority Queue using the BinaryHeap algorithm is much
+more efficient than that of the SortedArrayPriority queue.
+
+The benchmark tests cannot really be compared with those of the sets
+because the priority queues can only check the top.
+This means that there is no has() method and there is no way to remove
+a specific element (unless you were to remove all the elements and then
+add them back to the priority queue).
+
+What can be compared are some of the uses of sets and priority queues,
+namely the unique program.
+It doesn't necessarily work faster in a priority queue for every single
+scenario, but in the long run it will because it is worst case consistently
+nlog(n) whereas the sets are more dependent on the data order and size.
