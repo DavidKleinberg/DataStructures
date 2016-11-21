@@ -1,0 +1,127 @@
+David Kleinberg
+dkleinb1@jhu.edu
+October 2, 2016
+DataStructures Assignment 4
+
+PROBLEM 1 - Calculating Stacks
+
+Deliverables:
+	1. Calc.java
+		A basic RPN calculator.
+		Takes integer operands from command line arguments.
+		Takes (binary) integer operators +, -, *, /, and %.
+		Takes three additional commmands:
+			! - quits the calculator program
+			? - displays the stack in the correct order (enclosed by brackets)
+			. - displays the last (top-most) operand in the stack
+
+For this assignment, I had a main and three other helper methods
+(this was in part due to checkstyle's cyclomatic complexity guidelines,
+but also helped to thoughtfully organize the code).
+
+- In the main, I run a while loop to continually pull input from the command line
+until the user enters "!".
+Additionally, I try to push on the integer operand. In doing so, the program is
+effectively checking whether or not the input is actually an integer. If no error is
+thrown, the main will either pull more input or end.
+- If it is not an integer, however, the catch block sends the input to the "command()" method.
+This will handle the "?" or "." commands of the calculator, or determine whether the input
+is in fact valid. (The "." command can print an error message if the stack is empty.)
+The command() method will call the "isOperator()" helper method to confirm that the input 
+is one of the 5 binary integer operators. If false, it will print a message to
+standard error "?Invalid input" because it now knows that the input is not an integer,
+a command, or an operator.
+- If true, it will send the input to the "operator()" helper method, which knows how
+to deal with the 5 integer operators. One of two error messages can be printed to standard
+error from this method:
+	1. "?Cannot divide by zero"
+		Applicable to both the % and / operators if the and integer is divided by 0.
+		The program will push back the two integers onto the stack so that a different operation
+		can be performed.
+	2. "?Not enough arguments"
+		Applicable to all operators. If the stack is empty, or there is only one integer operand
+		with which the user wants to perform an operation.
+		The program will push back one integer in the latter case.
+
+PROBLEM 2 - Hacking Growable Dequeues
+
+Deliverables:
+	1. ArrayDequeue.java
+		- Implementation of a generic ArrayDequeue class
+		- Implements the Dequeue interface
+		- The Dequeue has no upper/lower bounds. Therefore, when using arrays, there
+			will be some "costly" operations every so often. In this case, the Dequeue
+			initially stores values in an array of size 1 and will transfer its values
+			(when each subsequent array fills) to one of double the previous size.
+		- I use a SimpleArray in my program, and will include it in the tarball.
+		- Supports all Dequeue operations except insertion in (worst-case) constant time,
+			however in amortized time, insertion is still constant time.
+		- An additional toString() method
+		- I also added a full() and grow() helper methods, but kept them private
+
+The grow() helper method will allocate space for an array of twice the current array's size.
+It will then add the all of the Dequeue's values to this new, larger array starting at the front
+and moving to the back. This will put the values back in linear order (as opposed to circular order).
+
+Any time the front or back change indices, I used the mod function to prevent an OutOfBoundsException
+(because we're using arrays) AND to maximize space/memory and the time-costly operations such as doubling.
+Since the front and back pointers in a dequeue vary, the array could have many open slots before the front
+that the mod function will help the program fill before creating a new array.
+
+Additionally, there was no need to actually remove an object from the underlying array.
+Rather I decremented the back pointer by 1 or incremented the front pointer by 1
+and decremented the length by 1.
+
+	2. TestArrayDequeue.java
+		- jUnit 4 test driver for ArrayDequeue class
+		- test cases for the axioms and preconditions of the Dequeue ADT
+
+I tried to use the BeforeClass to initialize a separate ArrayDequeue for each non-static test case, as
+explained in class, however it did not work for me. I therefore had to initialize a new ArrayDequeue
+in each test case.
+
+Though some of the test code may seem repetitive, I split it up so that each test case has one central
+assertEquals that corresponds to an axiom. This way, for instance, it is clear that the length method works,
+independently of the insertFront and insertBack methods.
+
+The toString() method was often the most effective way of testing some the axioms, even though
+other methods could have been called and pass the jUnit tests. For example:
+- after inserting from the front in the for loop, I could have just checked that the 
+	length was equal to the number of iterations. However the insertFront function might simply
+	be incrementing an internal length counter and nothing more.
+- it is for this reason that the most indicative test is the toString() comparison
+	because it tests order, length, emptiness. Essentially it checks with more precision.
+
+Another example of where multiple asserts could be made for 1 axiom is the makeEmpty() test.
+This initializes a dequeueArray, adds values to it, makes an assert (to ensure that dequeueArray is 
+actually filled with stuff), and then removes the same number of values. Finally, it asserts that 
+the empty() function returns true.
+
+I just as well could have asserted that the toString() function returns "[]" or that the length = 0,
+but given that the empty() method was tested 4 times with these axioms, I felt that this assert was
+all-encompassing. Furthermore, I could have repeated this test case by inserting through the back
+and removing from the front, but I felt this would be redundant, because the remove and insert
+methods have been tested for with their own axioms.
+
+PROBLEM 3 - Queue ADT (Optional)
+
+Develop an algebraic specification for the abstract data type Queue. Use new, empty, enqueue, dequeue, and front (with the meaning of each as discussed in lecture) as your set of operations. Consider unbounded queues only.
+
+adt Queue
+	uses Any, Boolean
+	defines Queue<T: Any>
+operations
+	new: T --> Queue<T>
+	empty: Queue<T> --> boolean
+	enqueue: Queue<T> x T --> Queue<T>
+	dequeue: Queue<T> --> Queue<T>
+	front: Queue<T> --> T
+axioms
+	empty(new(t)) = true
+	empty(enque(new(t), t)) = false
+	empty(dequeue(enque(new(t), t))) = true
+	front(enqueue(new(t), t) = t
+	front(q) = (if empty(dequeue(q)) = true then t else front(q)
+preconditions
+	front(q): empty(q) = false		(ie front(new(t)) should throw an exception)
+	dequeue(q): empty(q) = false	(ie Dequeue(new(t)) should throw an exception)
