@@ -96,18 +96,18 @@ Below is the file directory:
 8. AVL Trees and Treaps
     - AverageTimes.java
     - AVLMapTest.java
-    AVLTreeMap.java
-    AVLTreeMapBench.java
-    BinarySearchTreeBench.java
-    BinarySearchTreeMap.java
-    Map.java
-    MapTestBase.java
-    OrderedMap.java
-    SimpleMap.java
-    TreapMap.java
-    TreaMapBench.java
-    TreapMapTest.java
-    Words.java
+    - AVLTreeMap.java
+    - AVLTreeMapBench.java
+    - BinarySearchTreeBench.java
+    - BinarySearchTreeMap.java
+    - Map.java
+    - MapTestBase.java
+    - OrderedMap.java
+    - SimpleMap.java
+    - TreapMap.java
+    - TreaMapBench.java
+    - TreapMapTest.java
+    - Words.java
     * makedata.py
     * WordBenchmarks.sh
     
