@@ -1,0 +1,218 @@
+David Kleinberg
+dkleinb1@jhu.edu
+October 9, 2016
+DataStructures Assignment 5
+
+PROBLEM 1 - Sentinel List Implementation
+
+	Deliverables:
+		1. SentinelList.java
+			A list implementation that stores the data in nodes of a doubly linked list.
+			Very much like NodeList.java, however this file is written more efficiently and concisely.
+
+		2. ListTestBase.java
+			Contains 56 test cases for any implementation of a list
+			* The NodeList implementation provided will not pass 4 of the tests because
+				one of the remove methods does not invalidate the position
+
+		3. SentinelListTest.java
+			Runs the test cases in ListTestBase.java using the SentinelList implementation
+			Extends ListTestBase.java's abstract class to set up a sentinel list in @Before
+
+										SentinelList:
+
+This implementation passed all the same test cases as NodeList, however it was written
+in ~60 lines fewer (this was not from making the code unnecessarily condensed).
+The sentinels serve to guard the ends of the doubly linked list and they make checking
+for the bounds much simpler.
+Rather than checking special cases - like the node at the back of the list having a null reference
+to next, or setting up the first node in an empty list - this new implementation is written with
+one check that satisfies all the special cases, namely "am I at/pointing to the sentinel?"
+
+There are a couple ways to include sentinels in a doubly linked list. For example, one could
+make their "owner/color" different from that of the list's or one could put special data or variables.
+In my implementation, I chose to include a boolean value in all the nodes, such that the sentinels
+would stand out with bool = false (conceptually they wear a flashing red light).
+This choice allowed me to write statements like
+	"for (Node<T> p = this.head.next; p.sentinel; p = p.next) {"
+in the toString method. Furthermore, it would give the program some flexibility as to when and which
+exceptions to throw when reaching the end of the list (ie a sentinel). If I had gone with the choice
+of setting the sentinels' Position owner equal to null, it would presumably always throw a PositionException
+when the program reaches the ends, which is often the right thing to do, but it wouldn't allow for simple
+code to be written like the for loop above.
+
+Another instance that it might have been difficult to include sentinels without the boolean variable is
+in the iterator functions. Going off the bounds of the NodeList will in fact NOT throw a PositionException
+but rather a NullPointerException. Again, it wouldn't have been wrong to do the null-owner strategy for the
+sentinels, but it would have meant having to catch the PositionException and throwing a new NullPointerException
+and not in the spirit of having as concise code as possible. 
+
+Another time that my code used the sentinel boolean was in the following statement:
+
+	if (!this.current.sentinel) {
+    	throw new NullPointerException();
+            }
+
+It occurs in the ListIterator inner class - a minor change I had to make to the iterator 
+implementation when developing the test cases for (all) Lists.
+I will explain my reasoning and findings below in the section describing the third deliverable.
+
+										SentinelListTest:
+
+The main difference between SentinelList and NodeList is that the following test cases would have
+different outcomes:
+
+a) insert a position to the front
+	1. assert that the next = null
+		- in SentinelList this would be true and it would not throw an exception
+		- NodeList would throw an exception
+	2. assert that the previous = null
+		- in SentinelList this would be true and it would not throw an exception
+		- NodeList would throw an exception
+
+b) insert a position to the back
+	3. assert that the next = null and does not throw exception
+		- in SentinelList this would be true and it would not throw an exception
+		- NodeList would throw an exception
+	4. assert that the previous = null and does not throw exception
+		- in SentinelList this would be true and it would not throw an exception
+		- NodeList would throw an exception
+
+The sentinels are therefore not "hidden" completely.
+I can access them and show their existence in two very nuanced ways:
+
+	in example a) by using the iterator's next() function in the forward direction
+	in example b) by using the iterator's next() function in the backward direction
+
+The next() function in the iterator returns the data contained in the node that the reference
+called "current" points to. When the forward iterator is instantiated, the "current" reference
+actually points to the tail, which is a node (not just null space anymore). 
+Therefore if a user were to ignore the program's hasNext() call (which would return FALSE)
+and call iterator.next() it would simply return "null" without throwing an NullPointerException.
+
+This would cause for different test cases for the iterator in NodeList and SentinelList.
+However, on Piazza there was a post regarding the test cases:
+
+"You put the test cases into ListTestBase.java, that's where all the test cases are that
+you want to be able to apply to all List implementations. If there were (there aren't!)
+test cases specific to either NodeList or SentinelList, test cases that don't make sense
+for all List implementation, those would go into the specific NodeListTest.java or
+SentinelListTest.java files. However, seeing as there are none of those, the only function
+those two files serve is (a) to create the right type of list object to test, (b) to be the
+.class file you actually run with JUnit."
+
+It is clear that all list implementations should act the same to anyone using its interface,
+thus preventing leakage is important. I therefore added
+
+		if (!this.current.sentinel) {
+	    	throw new NullPointerException();
+	        	}
+
+to the Iterator inner class, and designed SentinelList to have the same attributes and perform
+in the same ways as NodeList for all other functions as well.
+
+										ListTestBase:
+
+Though very extensive (and possibly repetitive), the test cases were designed to demonstrate
+the axioms and precondition of each function in the list interface.
+There were MANY functions in the interface, often times not very different from one to another.
+Rather over test than undertest!
+
+More importantly, the repetition is a result of attempting to represent all of the preconditions
+of the ADT, even if the mechanics of testing them were nearly identical.
+A good example of this would be the PREVIOUS and NEXT preconditions. The preconditions are as follows:
+	1. The next(Position p) function cannot be called on an empty list
+		- will always throw a PositionException to enforce this
+	2. The previous(Position p) function cannot be called on an empty list
+		- will always throw a PositionException to enforce this
+	3. The next(Position p) function cannot be called on an invalid Position
+		- will always throw a PositionException to enforce this
+	4. The previous(Position p) function cannot be called on an invalid Position
+		- will always throw a PositionException to enforce this
+
+To test these 4 cases, ListTestBase has to make an invalid Position and calls list.previous or .next
+on that reference. The operations are the same, but the implications are very different.
+In both cases, the functions are being called with an invalid reference input, but I tried to 
+specify the difference by emptying the list and using a node that once DID exist in the list
+for the first 2 preconditions and I used a reference from a different list for the second 2. 
+
+Additionally it would be far too difficult, not to mention redundant, to split up each scenario.
+For instance length = 0 when the list is initialized, as does empty = true, and the string = [],
+and the iterator would print "", and many exceptions would be thrown, etcetera.
+Since there were so many functions as well as so many ways to prove that each one was working properly,
+I figured it would be best not to split them up (as i had done in the previous assignment),
+and I see some of the test cases provided follow this same format.
+
+PROBLEM 2
+
+The List interface is quite redundant and this trickles into the implementations themselves. Methods like
+front(), back(), first(), last(), etc. can essentially be eliminated, but I do understand their significance,
+and it really plays into the space vs. time paradox. The List interface uses a very abstract interface
+that we called "Position". Positions are actually references to nodes.
+There are two functions in the Position interface:
+	put(T t) and get()
+
+These make the design a bit more convenient because they allow for the data in a node to be modified or
+retrieved. Conceptually, they create a wormhole for the program that instantiates a list to ONLY one aspect
+of the underlying node - the data.
+Below is a snippet from a separate piece of code I wrote that helps illustrate this:
+
+//INSERT STUFF
+	Position<Integer> a = list.insertFront(5);
+	list.front().put(100);
+
+	Position<Integer> c = list.insertBack(10);
+	Position<Integer> b = list.insertFront(1);
+	System.out.println(list);
+
+out: "[1, 100, 10]"
+
+In this case it is clear that the data inside a node can be changed with access to just 
+a position, as the value in the middle of the list was changed with one constant time statement.
+The problem, however, is that for this to be possible, the positions created MUST be stored
+(whether in an array or behind the scenes with the program allocating memory).
+This is SPACE costly! And given the fact that a Position is really just a reference to a
+node, writing a program in the manner above is very redundant. The computer is essentially
+creating two lists in memory - one that stores nodes and one that stores references to those nodes.
+Moreover, the fact that an integer is half the number of bytes as a node reference (so a linked list
+could have an overhead of 4 times that of the data it stores), there would be HUGE overhead
+if the program were to store positions as well.
+
+The other solution is to not store positions in a program that instantiates a List.
+And now this plays into what I mentioned earlier, namely the importance of the once useless
+methods - front(), back(), first(), last(), etc.
+These have to come into the picture now, because the program no longer stores the references
+of the positions (our only hope of accessing the middle of a list!). Without them, adding/removing
+at a certain position would be impossible. To get around this however, we can now create some new 
+methods within this hypothetical ListDriver class that can "swing the monkey bars".
+
+Again, this comes with a HUGE con - losing constant time O(1) data access. Additionally,
+it makes the forward(), backward(), and iterator() methods redundant because the iterator
+does not return positions; it returns the data inside a node. So if one wanted access to the 
+position itself, the driver class would have to improvise its own form of iterator to achieve
+that same functionality as the first, space-costly manner I mentioned earlier.
+
+To sum everything up: in a list interface, the data is essentially two levels deep.
+It is stored inside a node inside of a position. Like most things in computer science
+this has pros and cons, but one very big con is redundancy and inefficient usage of space.
+The pro is that this has created two levels of protection. I have tried, in another part of
+my driver program (as seen above), to type cast and hack into the doubly linked list. The
+java language doesn't make this easy with statics and other issues I ran into. Given my
+experience, or lack thereof, I was not able to get direct access to the nodes from the
+driver program that instantiates a list. This is a pro! I cannot mix up the order of
+prev and next references which is essential to the functionality of a List.
+
+In terms of creating an array implementation of List, it is possible, but there would be striking
+differences. Removing/inserting at a specific locations are extremely costly to the array implementation.
+It would require shifting the data (and not just every X amount of steps as in amortized time). The worst
+case scenario is that data is shifted EVERY time something is added. Not only that, arrays are bounded
+whereas lists are not. This means there will be some costly grow operations. Even though it would be constant
+amortized time, imagine having to grow the array at the same time as shifting everything because an insert
+function was called. That would be a HUGE time cost, something that might even be noticeable at the time
+the operation occurs. It is for this reason that yes, the array implementation could be feasible, but it
+would be evident to the user as the underlying implementation. In other words, there is a lot of "leakage".
+
+In terms of symmetry, I like the sentinel implementation because it significantly simplifies the code.
+It simplifies it so much, in fact, that it makes insertBefore and insertAfter redundant because you could get rid
+of one (insertAfter for instance) and insert before the next node (which in some cases might be the sentinel.
+These are kept in however because, not only do they add to a nice "symmetry," but they also hide the use of sentinels.
