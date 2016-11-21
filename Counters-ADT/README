@@ -1,0 +1,74 @@
+David Kleinberg
+dkleinb1@jhu.edu
+September 11, 2016
+DataStructures Assignment 1
+
+PROBLEM 1: Unique Numbers
+   Files:
+      1. Unique.java
+         - Accepts any number of integers as command line arguments
+         - Prints each unique integer it was presented with as its output
+
+PROBLEM 2: Counter Varieties
+   Files:
+      1. Counter.java
+         - Interface for counters
+      2. ResetableCounter.java
+         - Interface for counters, enabling reset function to set counter back to initial value
+      3. BasicCounter.java
+         - Extends ResetableCounter interface
+         - Initial value set to 0
+         - Increments by 1
+         - Decrements by 1
+      4. SquareCounter.java
+         - Extends ResetableCounter interface
+         - Initial value set to 2
+         - Increments by squaring
+         - Decrements by taking square root
+      5. FlexibleCounter.java
+         - Extends ResetableCounter interface
+         - Takes two arguments (startVal and increment)
+         - Initial value set to startVal
+         - Increments by “increment”
+         - Decrements by “increment”
+      6. PolyCount.java
+         - Checks the three counter varieties with assertions
+All counter varieties have a main method with assertions
+
+PROBLEM 3: Unitialized Arrays
+   Algebraic specifications for the abstract data type “UglyArray”
+      - Specifies uninitialized arrays
+      - “Uninitialized” arrays will still return a length 
+      - They do not have an “initial value” that gets put into every slot of the array by default
+
+   Changes from Array:
+      - Get function requires a boolean argument, which can be determined by the check operation
+            - the preconditions specify that this boolean must be “true”
+      - Check (new) operation takes in the array and index, returns a boolean value 
+            - true if the index is filled with an object of type T
+            - false if the array at the specified index is empty
+      - New function only takes in an integer for the length of the array
+      - Put remains the same as the Array adt
+      - Length remains the same as well
+
+adt UglyArray
+   uses Any, Integer
+   defines Array<T: Any>
+   operations
+Array ADT
+    new: Integer ---> Array<T>
+    get: Array<T> x Integer x Boolean ---> T
+    put: Array<T> x Integer x T ---> Array<T>
+    length: Array<T> ---> Integer
+    check: Array<T> x Integer ---> Boolean
+axioms
+    get(put(a, i, t), j, check(a, j)) = (if i = j then t)
+    length(new(n)) = n
+    length(put(a, i, t)) = length(a)
+    check(a, i, put(a, i, t)) = true
+    check(new(n), i) = false
+preconditions
+     new(n): 0 < n
+     get(a, i, b): 0 <= i < length(a) and b = true
+     put(a, i, t): 0 <= i < length(a)
+     check(a, i): 0 <= i < length(a)
