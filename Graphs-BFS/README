@@ -1,1 +1,87 @@
+David Kleinberg
+dkleinb1@jhu.edu
+October 24, 2016
+DataStructures Assignment 6
 
+PROBLEM 1 - Sparse Graph Implementation
+
+Deliverables:
+		1. SparseGraph.java
+			A graph implementation that stores the data in vertices and edges.
+
+		2. GraphTestBase.java
+			Contains 30 test cases for any implementation of a graph
+
+		3. SparseGraphTest.java
+			Runs the test cases in GraphTestBase.java using the SparseGraph implementation
+			Extends GraphTestBase.java's abstract class to set up a sentinel list in @Before
+
+										SparseGraph:
+
+I ended up using inner classes in this implementation for the Vertex and Edge positions
+this was mainly due to the warnings thrown in Xlint
+
+However I did try both implementations. The nested class version would be safer in that
+the nodes cannot access the outside graph, but it threw many warnings.
+
+										SparseGraphTest:
+
+The difference between SparseGraphTest is that it must test the toString() method
+
+PROBLEM 2 - Six Degrees of Angelina Jolie
+
+Deliverables:
+		1. Angelina.java
+			The file provided with my algorithm for BFS and retracing to
+			print the path.
+
+
+											|
+				Sample Results				|				My Results
+----------------------------------------------------------------------------------------
+$ java Angelina action06.txt "Oldman, Gary"	| $ java Angelina action06.txt "Sellers, Peter"
+Oldman, Gary								| Sellers, Peter
+Batman Begins (2005)						| America at the Movies (1976)
+Bedella, David								| Voight, Jon
+Alexander (2004)							| Lara Croft: Tomb Raider (2001)
+Jolie, Angelina								| Jolie, Angelina
+											| Distance: 2
+
+Though the paths differ, the distance is 2 for both
+
+
+I tried other inputs (also using the bigger file) and they worked as well:
+
+	$ java Angelina all06.txt "Cube, Ice"
+	Cube, Ice
+	Anaconda (1997)
+	Voight, Jon
+	Lara Croft: Tomb Raider (2001)
+	Jolie, Angelina
+	Distance: 2
+
+
+/xtime has the following commands:		%Uu %Ss %er %MkB %C
+
+this means it will print:
+1. Total number of CPU-seconds that the process spent in user mode.
+2. Total number of CPU-seconds that the process spent in kernel mode.
+3. Elapsed real time (in seconds).
+4. Maximum resident set size of the process during its lifetime, in Kbytes.
+5. Name and command-line arguments of the command being timed.
+(respectively)
+
+these are from the https://linux.die.net/man/1/time provided on Piazza
+
+Following is one of my test runs using this command:
+
+$ ./xtime java Angelina action06.txt "Oldman, Gary"
+Oldman, Gary
+Batman Begins (2005)
+Bonfils, Khan
+Lara Croft Tomb Raider: The Cradle of Life (2003)
+Jolie, Angelina
+Distance: 2
+1.20u 0.31s 1.59r 119724kB java Angelina action06.txt Oldman, Gary
+
+It therefore doesn't look like my implementation uses too much memory or takes too much time.
