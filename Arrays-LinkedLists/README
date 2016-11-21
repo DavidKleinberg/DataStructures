@@ -1,0 +1,63 @@
+David Kleinberg
+dkleinb1@jhu.edu
+September 18, 2016
+DataStructures Assignment 2
+
+PROBLEM 1
+
+The Unique method has been modified from last weeks assignment.
+It uses the code provided in piazza which has been changed to work with SimpleArray.
+It takes standard input this time, removes duplicates, and prompts for any non-integer argument.
+
+PROBLEM 2
+
+adt FlexibleArray
+	uses Any, Integer
+	defines Array<T: Any>
+operations
+	new: Integer x T --> Array<T>
+	get: Array<T> x Integer --> T
+	put: Array<T> x Integer x T --> Array<T>
+	length: Array<T> --> Integer
+	getUpper: Array<T> --> Integer
+	getLower: Array<T> --> Integer
+axioms
+	get(new(lower, upper, t), i) = t
+	get(put(a, i, t), j) = (if i = j then t else get(a, j))
+	length(new(lower, upper, t)) = upper - lower + 1
+	length(put(a, i, t)) = length(a)
+	getUpper(new(lower, upper, t)) = upper
+	getLower(new(lower, upper, t)) = lower
+preconditions
+	new(lower, upper, t): lower <= upper
+	get(a, i): lower <= i <= upper
+	put(a, i, t): lower <= i <= upper
+
+Even though the prompt said that the FlexibleArray should act like any other array,
+the "new" operation allows for an upper and lower bound which doesn't seem to restrict
+negative values for either (as long at the lower is <= upper).
+This means that my adt allows for placement of and Object<T> at a negative index
+with the "put" operation.
+
+Length will always be > 0 (regardless of whether upper and/or lower bounds are negative/positive
+							or whether upper = lower)
+This also varies from the Array ADT because, not only does upper have to be > 0,
+but if one were to consider the lower bound in an Array ADT to be 0
+then upper CANNOT = lower because the indices are NONINCLUSIVE.
+Therefore the length of the FlexibleArray ADT will be one greater than the Array ADT,
+continuing with the example of the lower bounds being 0 in both ADTs
+
+PROBLEM 3
+
+"Think about this: Someone creates a SparseArray<Integer> with an initial value of 1. Then they put a few numbers different from 1 into the array. For example, the value of slot 4 might be 18. What should happen for put(4, 1)?"
+
+This is the one axiom I could not assert in PolyArray. I understand that if a node has been created
+(because the put method was called with something other than the initial value)
+and then the put method is called again with the same index, but this time inserting the
+initial value, then the node must be "deleted".
+The only way I can think of enforcing this axiom in an assert is by checking with number of nodes
+before and after the "remove()" method has been called in the SparseArray class. I do have
+a private integer variable which stores this value however the PolyArray would have to call
+a "getNumNodes" on the array - something that only applies to SparseArray ADT.
+In conclusion, my code for SparseArray DOES remove the node from the list to only store
+nodes that have been modified to a new value. But it might not be apparent in the PolyArray test.
